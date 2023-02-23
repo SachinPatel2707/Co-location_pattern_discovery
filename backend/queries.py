@@ -3,18 +3,18 @@ from backend.data import *
 import os
 
 create_all_tables_queries = []
-create_all_tables_queries.append(text("create table if not exists loc_a (gid serial primary key,	longitude varchar(50), latitude varchar(50), geog geography(point));"))
-create_all_tables_queries.append(text("create table if not exists loc_b (gid serial primary key,	longitude varchar(50), latitude varchar(50), geog geography(point));"))
-create_all_tables_queries.append(text("create table if not exists loc_c (gid serial primary key,	longitude varchar(50), latitude varchar(50), geog geography(point));"))
-create_all_tables_queries.append(text("create table if not exists loc_d (gid serial primary key,	longitude varchar(50), latitude varchar(50), geog geography(point));"))
-create_all_tables_queries.append(text("create table if not exists loc_e (gid serial primary key,	longitude varchar(50), latitude varchar(50), geog geography(point));"))
+create_all_tables_queries.append(text("create table if not exists a (gid serial primary key, longitude varchar(50), latitude varchar(50), geog geography(point));"))
+create_all_tables_queries.append(text("create table if not exists b (gid serial primary key, longitude varchar(50), latitude varchar(50), geog geography(point));"))
+create_all_tables_queries.append(text("create table if not exists c (gid serial primary key, longitude varchar(50), latitude varchar(50), geog geography(point));"))
+create_all_tables_queries.append(text("create table if not exists d (gid serial primary key, longitude varchar(50), latitude varchar(50), geog geography(point));"))
+create_all_tables_queries.append(text("create table if not exists e (gid serial primary key, longitude varchar(50), latitude varchar(50), geog geography(point));"))
 
 create_indexes_queries = []
-create_indexes_queries.append(text("create index loc_a_idx on loc_a using GIST (geog);"))
-create_indexes_queries.append(text("create index loc_b_idx on loc_b using GIST (geog);"))
-create_indexes_queries.append(text("create index loc_c_idx on loc_c using GIST (geog);"))
-create_indexes_queries.append(text("create index loc_d_idx on loc_d using GIST (geog);"))
-create_indexes_queries.append(text("create index loc_e_idx on loc_e using GIST (geog);"))
+create_indexes_queries.append(text("create index a_idx on a using GIST (geog);"))
+create_indexes_queries.append(text("create index b_idx on b using GIST (geog);"))
+create_indexes_queries.append(text("create index c_idx on c using GIST (geog);"))
+create_indexes_queries.append(text("create index d_idx on d using GIST (geog);"))
+create_indexes_queries.append(text("create index e_idx on e using GIST (geog);"))
 
 def create_all_tables():
     for q in create_all_tables_queries:
