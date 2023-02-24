@@ -25,13 +25,14 @@ def create_indexes():
     for q in create_indexes_queries:
         db_conn.execute(q)
 
-def drop_all_tables(arr):
-    for name in arr:
-        db_conn.execute(text("drop table if exists {}".format(name)))
+def drop_all_tables():
+    for tables in delete_tables:
+        for name in tables:
+            db_conn.execute(text("drop table if exists {}".format(name)))
 
 def load_initial_data():
     for table in tables[1]:
-        path = os.getcwd() + "/data/small_dataset/" + table + ".txt"
+        path = os.getcwd() + "/data/large_dataset/" + table + ".csv"
         file = open(path, 'r')
         data = file.readlines()
         for line in data:
