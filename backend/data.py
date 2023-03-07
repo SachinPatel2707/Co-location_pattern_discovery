@@ -2,7 +2,7 @@ from backend.db_connection import connect_to_db
 from sqlalchemy import text
 
 dist_h = 3000
-PI = 0.5
+PI = 0.3
 gurugram_long = 77.026344
 gurugram_lat = 28.457523
 meerut_long = 77.705956

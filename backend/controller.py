@@ -2,11 +2,13 @@ from collections import OrderedDict
 import geopandas as gpd
 import pandas as pd
 from backend.data import *
+from backend.queries import clear_directory
 import sqlalchemy as alc
 import os, sys, random
 import prettytable as pt
 
 def generate_data(size):
+    clear_directory(os.getcwd()+"/data/large_dataset/")
     for name in tables[1]:
         file = open(os.getcwd() + "/data/large_dataset/{}.csv".format(name), 'w')
         for i in range(size):
@@ -102,7 +104,9 @@ def check_further(size):
                 if table_name not in new_tables and len(dist_cols) == 2 and len(dist_cols)+len(common_cols) == len(keys):
                     new_tables.append(table_name)
                     create_next_table(table_name, common_cols, table_col_mapping, t1, t2)
-                    verify_neighbourhood(table_name, keys, table_to_verify_neighbourhood, dist_cols)
+                    isRemoved = verify_neighbourhood(table_name, keys, table_to_verify_neighbourhood, dist_cols)
+                    if isRemoved == True:
+                        new_tables.remove(table_name)
                     
         tables.append(new_tables)
         verify_PI(size+1)
@@ -127,14 +131,23 @@ def create_next_table(name, common_cols, table_col_mapping, t1, t2):
     db_conn.execute(sql)
 
 def verify_neighbourhood(table_name, keys, verify_table, cols):
-    # delete from abc where not exists (select * from bc where bc.b = abc.b and bc.c = abc.c);
-    sql = "delete from {} where not exists (select * from {} where ".format(table_name, verify_table)
-    for col in cols:
-        sql += "{}.{} = {}.{} and ".format(table_name, col, verify_table, col)
-    sql = sql[: len(sql)-5]
-    sql += ")"
-    # print(sql) # LOG
-    db_conn.execute(alc.text(sql))
+    size = len(verify_table)
+    if verify_table in tables[size]:
+        # delete from abc where not exists (select * from bc where bc.b = abc.b and bc.c = abc.c);
+        sql = "delete from {} where not exists (select * from {} where ".format(table_name, verify_table)
+        for col in cols:
+            sql += "{}.{} = {}.{} and ".format(table_name, col, verify_table, col)
+        sql = sql[: len(sql)-5]
+        sql += ")"
+        # print(sql) # LOG
+        db_conn.execute(alc.text(sql))
+    else:
+        # if bc itself failed to cross the threshold then, abc combination is impossible to make
+        # hence, just drop this whole abc table
+        sql = "drop table {}".format(table_name)
+        db_conn.execute(alc.text(sql))
+        return True
+    return False
 
 def print_table(size):
     final_res = []
@@ -176,3 +189,7 @@ def print_table(size):
     
     res.add_row(pi)
     print(res)
+
+def initPItable():
+    for table in tables[1]:
+        PI_of_tables[table] = 1.0

@@ -30,7 +30,26 @@ def drop_all_tables():
         for name in tables:
             db_conn.execute(text("drop table if exists {}".format(name)))
 
+def read_from_single_file():
+    path = os.getcwd() + "/data/data_small/data.csv"
+    file = open(path, 'r')
+    data = file.readlines()
+    write_files = {}
+    for table in tables[1]:
+        write_files[table] = open(os.getcwd() + "/data/large_dataset/" + table + ".csv", 'w')
+    
+    for line in data:
+        name, long, lat = line.split(",")
+        table = name[:1].lower()
+        str = "{},{}".format(long, lat)
+        write_files[table].write(str)
+    
+    for table in tables[1]:
+        write_files[table].close()     
+
 def load_initial_data():
+    clear_directory(os.getcwd()+"/data/output/")
+    # read_from_single_file()
     for table in tables[1]:
         path = os.getcwd() + "/data/large_dataset/" + table + ".csv"
         file = open(path, 'r')
@@ -39,3 +58,9 @@ def load_initial_data():
             long, lat = line.split(",")
             db_conn.execute(text("insert into {} (longitude, latitude, geog) values ({}, {}, 'POINT({} {})')".format(table, long, lat, long, lat)))
         file.close()
+
+def clear_directory(path):
+    for file_name in os.listdir(path):
+        file = path + file_name
+        if os.path.isfile(file):
+            os.remove(file)
